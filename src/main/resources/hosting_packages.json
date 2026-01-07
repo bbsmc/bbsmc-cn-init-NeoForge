@@ -1,0 +1,64 @@
+{
+  "packages": [
+    {
+      "name": "入门型",
+      "processor": "AMD EPYC 7R13 3.6GHz",
+      "memory": "8G",
+      "defaultBackupSlots": 1,
+      "maxBackupSlots": 1,
+      "storage": "30G",
+      "recommendedPlayers": "2-3人",
+      "price": 58,
+      "color": "0xFF888888",
+      "tag": null
+    },
+    {
+      "name": "标准型",
+      "processor": "Intel Core I7-14700K / AMD Ryzen9 9950X",
+      "memory": "10G",
+      "defaultBackupSlots": 1,
+      "maxBackupSlots": 2,
+      "storage": "30G",
+      "recommendedPlayers": "4-6人",
+      "price": 88,
+      "color": "0xFF5555FF",
+      "tag": "热销"
+    },
+    {
+      "name": "灵活型",
+      "processor": "Intel Core I7-14700K / AMD Ryzen9 9950X",
+      "memory": "12G",
+      "defaultBackupSlots": 1,
+      "maxBackupSlots": 2,
+      "storage": "30G",
+      "recommendedPlayers": "6-8人",
+      "price": 108,
+      "color": "0xFF55FF55",
+      "tag": null
+    },
+    {
+      "name": "悦享型",
+      "processor": "Intel Core I7-14700K / AMD Ryzen9 9950X",
+      "memory": "18G",
+      "defaultBackupSlots": 1,
+      "maxBackupSlots": 3,
+      "storage": "30G",
+      "recommendedPlayers": "9-12人",
+      "price": 168,
+      "color": "0xFFAA55FF",
+      "tag": "多人推荐"
+    },
+    {
+      "name": "曜石型",
+      "processor": "Intel Core I7-14700K / AMD Ryzen9 9950X",
+      "memory": "24G",
+      "defaultBackupSlots": 1,
+      "maxBackupSlots": 5,
+      "storage": "30G",
+      "recommendedPlayers": "12-15人",
+      "price": 238,
+      "color": "0xFFFFAA00",
+      "tag": null
+    }
+  ]
+}
