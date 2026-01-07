@@ -13,7 +13,7 @@ repositories {
 }
 
 base {
-    archivesName = mod_id
+    archivesName = "YTGame-HostingMenu-${minecraft_version}-NeoForge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

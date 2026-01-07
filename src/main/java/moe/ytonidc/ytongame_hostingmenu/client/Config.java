@@ -1,55 +1,45 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.neoforged.fml.loading.FMLPaths;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("ytongame-hostingmenu.json");
+    public static final ModConfigSpec SPEC;
 
-    private static ConfigData data = new ConfigData();
+    public static final ModConfigSpec.ConfigValue<String> PURCHASE_URL;
+    public static final ModConfigSpec.BooleanValue ENABLE_ADS;
+    public static final ModConfigSpec.BooleanValue CHINESE_ONLY;
 
-    public static class ConfigData {
-        public String purchaseUrl = "https://example.com/buy";
-        public boolean enableAds = true;
-        public boolean chineseOnly = true;
-    }
+    static {
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
-    public static void load() {
-        if (Files.exists(CONFIG_PATH)) {
-            try {
-                String json = Files.readString(CONFIG_PATH);
-                data = GSON.fromJson(json, ConfigData.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            save();
-        }
-    }
+        builder.push("general");
 
-    public static void save() {
-        try {
-            Files.writeString(CONFIG_PATH, GSON.toJson(data));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        PURCHASE_URL = builder
+                .comment("购买链接 URL")
+                .define("purchaseUrl", "https://bbsmc.net/server?aff=LaotouY");
+
+        ENABLE_ADS = builder
+                .comment("是否启用广告")
+                .define("enableAds", true);
+
+        CHINESE_ONLY = builder
+                .comment("是否仅对中文用户显示")
+                .define("chineseOnly", true);
+
+        builder.pop();
+
+        SPEC = builder.build();
     }
 
     public static String getPurchaseUrl() {
-        return data.purchaseUrl;
+        return PURCHASE_URL.get();
     }
 
     public static boolean isAdsEnabled() {
-        return data.enableAds;
+        return ENABLE_ADS.get();
     }
 
     public static boolean isChineseOnly() {
-        return data.chineseOnly;
+        return CHINESE_ONLY.get();
     }
 }
