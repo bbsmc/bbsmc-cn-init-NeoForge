@@ -12,7 +12,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -25,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Mod(Ytongame_hostingmenu.MODID)
-@EventBusSubscriber(modid = Ytongame_hostingmenu.MODID)
 public class Ytongame_hostingmenu {
     public static final String MODID = "ytongame_hostingmenu";
     public static final Logger LOGGER = LogUtils.getLogger();
