@@ -18,7 +18,9 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +51,7 @@ public class Ytongame_hostingmenu {
             }
 
             List<String> languagePacks = new ArrayList<>();
-            try (FileReader reader = new FileReader(configFile)) {
+            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
 
                 JsonObject resourcePackInstall = json.getAsJsonObject("resource_pack_install");
