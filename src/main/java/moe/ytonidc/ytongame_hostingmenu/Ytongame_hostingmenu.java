@@ -46,8 +46,16 @@ public class Ytongame_hostingmenu {
 
             File configFile = new File(mc.gameDirectory, "config/modpack_info.json");
             if (!configFile.exists()) {
-                LOGGER.debug("modpack_info.json not found, skipping auto resource pack loading");
+                LOGGER.debug("modpack_info.json not found, skipping auto setup");
                 return;
+            }
+
+            // 检查并设置语言为简体中文
+            String currentLang = mc.getLanguageManager().getSelected();
+            if (!"zh_cn".equals(currentLang)) {
+                LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
+                mc.getLanguageManager().setSelected("zh_cn");
+                mc.reloadResourcePacks();
             }
 
             List<String> languagePacks = new ArrayList<>();
