@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import moe.ytonidc.ytongame_hostingmenu.client.Config;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
@@ -55,6 +56,7 @@ public class Ytongame_hostingmenu {
             if (!"zh_cn".equals(currentLang)) {
                 LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
                 mc.getLanguageManager().setSelected("zh_cn");
+                RegionDetector.refreshLanguage("zh_cn");
                 mc.reloadResourcePacks();
             }
 
