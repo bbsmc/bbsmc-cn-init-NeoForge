@@ -12,10 +12,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -33,9 +36,14 @@ public class Ytongame_hostingmenu {
     public static final ResourceLocation HOSTING_LOGO = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/logo_ytongame.png");
     public static final Gson GSON = new Gson();
 
+    private static boolean languageSetupDone = false;
+
     public Ytongame_hostingmenu(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modEventBus.addListener(this::onClientSetup);
+
+        // 注册NeoForge事件总线
+        NeoForge.EVENT_BUS.register(new ClientEventHandler());
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -49,19 +57,6 @@ public class Ytongame_hostingmenu {
             if (!configFile.exists()) {
                 LOGGER.debug("modpack_info.json not found, skipping auto setup");
                 return;
-            }
-
-            // 检查并设置语言为简体中文
-            String currentLang = mc.getLanguageManager().getSelected();
-            String targetLang = "zh_cn";
-            if (!targetLang.equals(currentLang)) {
-                LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
-                mc.getLanguageManager().setSelected(targetLang);
-                mc.options.languageCode = targetLang;
-                mc.options.save();
-                LOGGER.info("Saving language '{}' to options", targetLang);
-                RegionDetector.refreshLanguage(targetLang);
-                mc.reloadResourcePacks();
             }
 
             List<String> languagePacks = new ArrayList<>();
@@ -125,5 +120,41 @@ public class Ytongame_hostingmenu {
                 mc.reloadResourcePacks();
             }
         });
+    }
+
+    // 客户端事件处理器 - 在游戏完全加载后设置语言
+    public static class ClientEventHandler {
+        @SubscribeEvent
+        public void onClientTick(ClientTickEvent.Post event) {
+            if (languageSetupDone) {
+                return;
+            }
+
+            Minecraft mc = Minecraft.getInstance();
+            // 等待游戏完全加载（主菜单出现）
+            if (mc.screen == null && mc.level == null) {
+                return;
+            }
+
+            languageSetupDone = true;
+
+            File configFile = new File(mc.gameDirectory, "config/modpack_info.json");
+            if (!configFile.exists()) {
+                return;
+            }
+
+            // 检查并设置语言为简体中文
+            String currentLang = mc.getLanguageManager().getSelected();
+            String targetLang = "zh_cn";
+            if (!targetLang.equals(currentLang)) {
+                LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
+                mc.getLanguageManager().setSelected(targetLang);
+                mc.options.languageCode = targetLang;
+                mc.options.save();
+                LOGGER.info("Language set to '{}', reloading resources", targetLang);
+                RegionDetector.refreshLanguage(targetLang);
+                mc.reloadResourcePacks();
+            }
+        }
     }
 }
