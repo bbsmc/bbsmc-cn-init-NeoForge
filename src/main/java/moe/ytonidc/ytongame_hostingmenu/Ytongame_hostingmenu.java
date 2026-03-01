@@ -10,6 +10,8 @@ import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
 import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
 import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -20,6 +22,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
@@ -41,13 +44,16 @@ public class Ytongame_hostingmenu {
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
 
-    private static boolean setupDone = false;
+    private static boolean configLoaded = false;
+    private static boolean userAgreement = false;
+    private static List<String> languagePacks = new ArrayList<>();
+    private static JsonObject modpackJson = null;
+    private static File configFile = null;
 
     public Ytongame_hostingmenu(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modEventBus.addListener(this::onClientSetup);
 
-        // 注册NeoForge事件总线
         NeoForge.EVENT_BUS.register(new ClientEventHandler());
     }
 
@@ -61,7 +67,11 @@ public class Ytongame_hostingmenu {
         }
     }
 
-    public static void setupLanguageAndPacks(Minecraft mc, List<String> languagePacks) {
+    public static void markAgreed() {
+        userAgreement = true;
+    }
+
+    public static void setupLanguageAndPacks(Minecraft mc, List<String> packs) {
         String currentLang = mc.getLanguageManager().getSelected();
         String targetLang = "zh_cn";
         boolean languageChanged = false;
@@ -76,13 +86,13 @@ public class Ytongame_hostingmenu {
         }
 
         boolean packsChanged = false;
-        if (!languagePacks.isEmpty()) {
+        if (!packs.isEmpty()) {
             File resourcePacksDir = new File(mc.gameDirectory, "resourcepacks");
             PackRepository packRepository = mc.getResourcePackRepository();
             packRepository.reload();
 
             List<String> packsToEnable = new ArrayList<>();
-            for (String packName : languagePacks) {
+            for (String packName : packs) {
                 File packFile = new File(resourcePacksDir, packName);
                 if (packFile.exists()) {
                     packsToEnable.add("file/" + packName);
@@ -111,7 +121,45 @@ public class Ytongame_hostingmenu {
         }
     }
 
+    private static void loadConfig(Minecraft mc) {
+        if (configLoaded) {
+            return;
+        }
+        configLoaded = true;
+
+        configFile = new File(mc.gameDirectory, "config/modpack_info.json");
+        if (!configFile.exists()) {
+            LOGGER.debug("modpack_info.json not found, skipping auto setup");
+            userAgreement = true;
+            return;
+        }
+
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
+            modpackJson = GSON.fromJson(reader, JsonObject.class);
+
+            if (modpackJson.has("user_agreement")) {
+                userAgreement = modpackJson.get("user_agreement").getAsBoolean();
+            }
+
+            JsonArray packsArray = modpackJson.getAsJsonArray("language_packs");
+            if (packsArray != null) {
+                for (int i = 0; i < packsArray.size(); i++) {
+                    languagePacks.add(packsArray.get(i).getAsString());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to read modpack_info.json", e);
+            userAgreement = true;
+        }
+
+        if (userAgreement) {
+            setupLanguageAndPacks(mc, languagePacks);
+        }
+    }
+
     public static class ClientEventHandler {
+        private boolean setupDone = false;
+
         @SubscribeEvent
         public void onClientTick(ClientTickEvent.Post event) {
             if (setupDone) {
@@ -124,39 +172,26 @@ public class Ytongame_hostingmenu {
             }
 
             setupDone = true;
+            loadConfig(mc);
+        }
 
-            File configFile = new File(mc.gameDirectory, "config/modpack_info.json");
-            if (!configFile.exists()) {
-                LOGGER.debug("modpack_info.json not found, skipping auto setup");
+        @SubscribeEvent
+        public void onScreenOpening(ScreenEvent.Opening event) {
+            if (userAgreement) {
                 return;
             }
 
-            List<String> languagePacks = new ArrayList<>();
-            boolean userAgreement = false;
-            JsonObject modpackJson = null;
-
-            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
-                modpackJson = GSON.fromJson(reader, JsonObject.class);
-
-                if (modpackJson.has("user_agreement")) {
-                    userAgreement = modpackJson.get("user_agreement").getAsBoolean();
-                }
-
-                JsonArray packsArray = modpackJson.getAsJsonArray("language_packs");
-                if (packsArray != null) {
-                    for (int i = 0; i < packsArray.size(); i++) {
-                        languagePacks.add(packsArray.get(i).getAsString());
-                    }
-                }
-            } catch (Exception e) {
-                LOGGER.error("Failed to read modpack_info.json", e);
-                return;
+            if (!configLoaded) {
+                loadConfig(Minecraft.getInstance());
             }
 
             if (userAgreement) {
-                setupLanguageAndPacks(mc, languagePacks);
-            } else {
-                mc.setScreen(new LocalizationNoticeScreen(modpackJson, languagePacks, configFile));
+                return;
+            }
+
+            if (event.getNewScreen() instanceof SelectWorldScreen
+                    || event.getNewScreen() instanceof JoinMultiplayerScreen) {
+                event.setNewScreen(new LocalizationNoticeScreen(modpackJson, languagePacks, configFile));
             }
         }
     }
