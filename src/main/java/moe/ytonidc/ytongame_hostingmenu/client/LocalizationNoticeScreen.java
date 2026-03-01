@@ -24,7 +24,7 @@ public class LocalizationNoticeScreen extends Screen {
         "\u00a7f若您当前游玩的整合包已经有完整的人工翻译，我们也相当欢迎您使用更精准更优质的人工翻译。",
         "",
         "\u00a76\u00a7l二、广告内容",
-        "\u00a7fBBSMC汉化包含有仅出现在服务器多人列表和创建世界导航标签页面的服务器广告，不会对游戏体验造成影响。我们需要一定的收入来支撑汉化服务器的运转。\u00a7c\u00a7l如果觉得广告影响游戏体验，请先点击\"拒绝并退出\"关闭游戏，然后手动删除mods文件夹内的YTGame-HostingMenu.jar文件，再重新启动游戏即可。",
+        "\u00a7fBBSMC汉化包含有仅出现在服务器多人列表和创建世界导航标签页面的服务器广告，不会对游戏体验造成影响。我们需要一定的收入来支撑汉化服务器的运转。\u00a7c\u00a7l如果觉得广告影响游戏体验，请先点击关闭游戏，然后删除YTGame-HostingMenu模组，再重新启动游戏即可。",
         ""
     };
     private static final String AGREE_TEXT = "同意并继续";
