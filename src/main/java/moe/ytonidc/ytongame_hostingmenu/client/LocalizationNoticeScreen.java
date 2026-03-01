@@ -96,7 +96,7 @@ public class LocalizationNoticeScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
 
@@ -110,8 +110,6 @@ public class LocalizationNoticeScreen extends Screen {
             }
             textY += lineHeight;
         }
-
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
