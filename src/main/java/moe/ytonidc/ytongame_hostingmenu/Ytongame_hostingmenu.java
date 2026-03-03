@@ -152,9 +152,6 @@ public class Ytongame_hostingmenu {
             userAgreement = true;
         }
 
-        if (userAgreement) {
-            setupLanguageAndPacks(mc, languagePacks);
-        }
     }
 
     public static class ClientEventHandler {
@@ -173,6 +170,9 @@ public class Ytongame_hostingmenu {
 
             setupDone = true;
             loadConfig(mc);
+            if (userAgreement) {
+                setupLanguageAndPacks(mc, languagePacks);
+            }
         }
 
         @SubscribeEvent
