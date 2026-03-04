@@ -10,10 +10,36 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven {
+        name = 'BMCLAPI'
+        url = 'https://bmclapi2.bangbang93.com/maven/'
+        content {
+            includeGroup 'org.apache.logging.log4j'
+            includeGroup 'com.mojang'
+            includeGroup 'org.slf4j'
+            includeGroup 'com.google.guava'
+            includeGroup 'com.ibm.icu'
+            includeGroup 'io.netty'
+            includeGroup 'net.sf.jopt-simple'
+            includeGroup 'org.apache.commons'
+            includeGroup 'org.apache.httpcomponents'
+            includeGroup 'org.jcraft'
+            includeGroup 'org.lwjgl'
+            includeGroup 'com.google.code.gson'
+            includeGroup 'commons-codec'
+            includeGroup 'commons-io'
+            includeGroup 'commons-logging'
+            includeGroup 'it.unimi.dsi'
+            includeGroup 'net.java.dev.jna'
+            includeGroup 'ca.weblite'
+            includeGroup 'com.github.oshi'
+        }
+    }
+    mavenCentral()
 }
 
 base {
-    archivesName = "YTGame-HostingMenu-${minecraft_version}-NeoForge"
+    archivesName = "bbsmc-cn-init-${minecraft_version}-NeoForge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

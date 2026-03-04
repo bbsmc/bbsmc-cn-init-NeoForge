@@ -1,4 +1,4 @@
-package moe.ytonidc.ytongame_hostingmenu.client;
+package net.bbsmc.cninit.client;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 

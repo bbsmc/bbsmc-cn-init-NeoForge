@@ -1,12 +1,12 @@
-package moe.ytonidc.ytongame_hostingmenu;
+package net.bbsmc.cninit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import moe.ytonidc.ytongame_hostingmenu.client.Config;
-import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
+import net.bbsmc.cninit.client.Config;
+import net.bbsmc.cninit.client.LocalizationNoticeScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Mod(Ytongame_hostingmenu.MODID)
-public class Ytongame_hostingmenu {
-    public static final String MODID = "ytongame_hostingmenu";
+@Mod(BbsmcCnInit.MODID)
+public class BbsmcCnInit {
+    public static final String MODID = "bbsmc_cn_init";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -45,7 +45,7 @@ public class Ytongame_hostingmenu {
     private static JsonObject modpackJson = null;
     private static File configFile = null;
 
-    public Ytongame_hostingmenu(IEventBus modEventBus, ModContainer modContainer) {
+    public BbsmcCnInit(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modEventBus.addListener(this::onClientSetup);
 
