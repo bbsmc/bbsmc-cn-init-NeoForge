@@ -164,9 +164,7 @@ public class BbsmcCnInit {
 
             setupDone = true;
             loadConfig(mc);
-            if (userAgreement) {
-                setupLanguageAndPacks(mc, languagePacks);
-            }
+            setupLanguageAndPacks(mc, languagePacks);
         }
 
         @SubscribeEvent
