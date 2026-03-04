@@ -6,13 +6,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import moe.ytonidc.ytongame_hostingmenu.client.Config;
-import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
 import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
-import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.neoforged.bus.api.IEventBus;
@@ -20,7 +17,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -40,7 +36,6 @@ import java.util.List;
 public class Ytongame_hostingmenu {
     public static final String MODID = "ytongame_hostingmenu";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final ResourceLocation HOSTING_LOGO = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/logo_ytongame.png");
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
 
@@ -57,8 +52,8 @@ public class Ytongame_hostingmenu {
         NeoForge.EVENT_BUS.register(new ClientEventHandler());
     }
 
-    private void onClientSetup(FMLClientSetupEvent event) {
-        HostingPackage.loadAsync();
+    private void onClientSetup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+        // No-op after ad removal
     }
 
     public static void writeJsonToFile(File file, JsonObject json) throws Exception {
@@ -81,7 +76,6 @@ public class Ytongame_hostingmenu {
             mc.options.languageCode = targetLang;
             mc.options.save();
             LOGGER.info("Language set to '{}'", targetLang);
-            RegionDetector.refreshLanguage(targetLang);
             languageChanged = true;
         }
 

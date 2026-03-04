@@ -3,14 +3,7 @@
   "minVersion": "0.8",
   "package": "moe.ytonidc.ytongame_hostingmenu.mixin.client",
   "compatibilityLevel": "JAVA_21",
-  "client": [
-    "CreateWorldScreenMixin",
-    "SelectWorldScreenMixin",
-    "ServerSelectionListMixin",
-    "TabButtonMixin",
-    "TabNavigationBarBuilderMixin",
-    "accessor.TabNavigationBarAccessor"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }
