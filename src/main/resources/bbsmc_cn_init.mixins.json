@@ -3,7 +3,9 @@
   "minVersion": "0.8",
   "package": "net.bbsmc.cninit.mixin.client",
   "compatibilityLevel": "JAVA_21",
-  "client": [],
+  "client": [
+    "GameOptionsMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
