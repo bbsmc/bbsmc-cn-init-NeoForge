@@ -58,7 +58,9 @@ public class GameOptionsMixin {
                 }
             }
 
-            ((Options)(Object)this).save();
+            // 不调用 save()：<init> 阶段其他模组（如 dynamic_fps）在 save() 上的 Mixin
+            // 可能因 ModList 未初始化而崩溃，且 Java 的 <clinit> 失败后该类永久不可用。
+            // 字段修改已在内存中生效，游戏正常退出时会自动保存到 options.txt。
 
         } catch (Exception e) {
             LoggerFactory.getLogger("bbsmc-cn-init")
