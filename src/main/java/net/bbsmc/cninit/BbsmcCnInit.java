@@ -20,6 +20,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.api.distmarker.Dist;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Mod(BbsmcCnInit.MODID)
+@Mod(value = BbsmcCnInit.MODID, dist = Dist.CLIENT)
 public class BbsmcCnInit {
     public static final String MODID = "bbsmc_cn_init";
     public static final Logger LOGGER = LogUtils.getLogger();
