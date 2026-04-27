@@ -2,7 +2,7 @@ package net.bbsmc.cninit.client;
 
 import com.google.gson.JsonObject;
 import net.bbsmc.cninit.BbsmcCnInit;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -84,10 +84,10 @@ public class LocalizationNoticeScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 15, 0xFFFFFFFF);
 
         int textX = 30;
         int textY = 40;
@@ -95,7 +95,7 @@ public class LocalizationNoticeScreen extends Screen {
 
         for (FormattedCharSequence line : wrappedLines) {
             if (line != FormattedCharSequence.EMPTY) {
-                guiGraphics.drawString(this.font, line, textX, textY, 0xDDDDDD);
+                guiGraphics.text(this.font, line, textX, textY, 0xFFDDDDDD);
             }
             textY += lineHeight;
         }

@@ -68,52 +68,56 @@ public class BbsmcCnInit {
     }
 
     public static void setupLanguageAndPacks(Minecraft mc, List<String> packs) {
-        String currentLang = mc.getLanguageManager().getSelected();
-        String targetLang = "zh_cn";
-        boolean languageChanged = false;
-        if (!targetLang.equals(currentLang)) {
-            LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
-            mc.getLanguageManager().setSelected(targetLang);
-            mc.options.languageCode = targetLang;
-            mc.options.save();
-            LOGGER.info("Language set to '{}'", targetLang);
-            languageChanged = true;
+        if (packs.isEmpty()) return;
+
+        File resourcePacksDir = new File(mc.gameDirectory, "resourcepacks");
+        PackRepository packRepository = mc.getResourcePackRepository();
+
+        List<String> packsToEnable = new ArrayList<>();
+        for (String packName : packs) {
+            File packFile = new File(resourcePacksDir, packName);
+            String packId = "file/" + packName;
+            if (packFile.exists() && packRepository.getPack(packId) != null) {
+                packsToEnable.add(packId);
+            } else {
+                LOGGER.warn("Resource pack not found: {}", packName);
+            }
+        }
+        if (packsToEnable.isEmpty()) return;
+
+        // 用 getSelectedPacks() 拿到有序 ImmutableList（不能用 getSelectedIds()，那是 ImmutableSet）
+        List<String> selected = new ArrayList<>();
+        for (Pack p : packRepository.getSelectedPacks()) {
+            selected.add(p.getId());
         }
 
-        boolean packsChanged = false;
-        if (!packs.isEmpty()) {
-            File resourcePacksDir = new File(mc.gameDirectory, "resourcepacks");
-            PackRepository packRepository = mc.getResourcePackRepository();
-            packRepository.reload();
-
-            List<String> packsToEnable = new ArrayList<>();
-            for (String packName : packs) {
-                File packFile = new File(resourcePacksDir, packName);
-                if (packFile.exists()) {
-                    packsToEnable.add("file/" + packName);
-                } else {
-                    LOGGER.warn("Resource pack not found: {}", packName);
+        // 末尾 = 最高优先级（FallbackResourceManager 从末尾向前查找资源）
+        // 快速判断：packsToEnable 是否已经按相同顺序排在 selected 末尾，是就直接跳过
+        int n = packsToEnable.size();
+        int s = selected.size();
+        if (s >= n) {
+            boolean alreadyAtTop = true;
+            for (int i = 0; i < n; i++) {
+                if (!packsToEnable.get(i).equals(selected.get(s - n + i))) {
+                    alreadyAtTop = false;
+                    break;
                 }
             }
-
-            Collection<String> selected = new ArrayList<>(packRepository.getSelectedIds());
-            for (String packId : packsToEnable) {
-                Pack pack = packRepository.getPack(packId);
-                if (pack != null && !selected.contains(packId)) {
-                    selected.add(packId);
-                    packsChanged = true;
-                    LOGGER.info("Auto-enabled resource pack: {}", packId);
-                }
-            }
-
-            if (packsChanged) {
-                packRepository.setSelected(selected);
+            if (alreadyAtTop) {
+                LOGGER.debug("Resource packs already at highest priority, skipping reload");
+                return;
             }
         }
 
-        if (languageChanged || packsChanged) {
-            mc.reloadResourcePacks();
+        // 重排：移除已存在的，再按顺序追加到末尾，覆盖 mod_resources 等所有其他资源包
+        for (String packId : packsToEnable) {
+            selected.remove(packId);
         }
+        selected.addAll(packsToEnable);
+
+        packRepository.setSelected(selected);
+        mc.reloadResourcePacks();
+        LOGGER.info("Promoted resource packs to highest priority: {}", packsToEnable);
     }
 
     private static void loadConfig(Minecraft mc) {
@@ -165,6 +169,11 @@ public class BbsmcCnInit {
 
             setupDone = true;
             loadConfig(mc);
+            // 只在用户尚未点击过"继续"时执行重排 + 重载，
+            // 已经同意过的用户直接跳过，避免每次启动都强制重载资源包
+            if (!userAgreement) {
+                setupLanguageAndPacks(mc, languagePacks);
+            }
         }
 
         @SubscribeEvent
